@@ -8,6 +8,7 @@ RABBIT_QUEUE = 'cacahuate_process'
 RABBIT_NOTIFY_EXCHANGE = 'charpe_notify'
 RABBIT_CONSUMER_TAG = 'cacahuate_consumer_1'
 RABBIT_NO_ACK = True
+RABBIT_RETRIES = 3
 
 # Default logging config
 LOGGING = {

@@ -1,3 +1,4 @@
+from pika.exceptions import ConnectionClosed
 import logging
 import pika
 import traceback
@@ -34,9 +35,20 @@ class Loop:
 
         LOGGER.info('cacahuate started')
 
-        try:
-            channel.start_consuming()
-        except KeyboardInterrupt:
-            LOGGER.info('cacahuate stopped')
-        except Exception as e:
-            LOGGER.error(traceback.format_exc())
+        retries = 0
+
+        while cont:
+            try:
+                channel.start_consuming()
+            except KeyboardInterrupt:
+                LOGGER.info('cacahuate stopped')
+                break
+            except ConnectionClosed as e:
+                if retries < self.config['RABBIT_RETRIES']:
+                    retries += 1
+                else:
+                    LOGGER.warning('connection retry limit reached')
+                    break
+            except Exception as e:
+                LOGGER.error(traceback.format_exc())
+                break
